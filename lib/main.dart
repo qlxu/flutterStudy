@@ -1,75 +1,81 @@
 import 'package:flutter/material.dart';
-import 'package:english_words/english_words.dart';
 
-void main() => runApp(new MyApp());
+import 'dart:math' as math;
 
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-//    final wordPair = new WordPair.random();
-    return new MaterialApp(
-      title: 'Startup Name Generator',
-      home: new RandomWords(),
-//      home: new Scaffold(
-//        appBar: new AppBar(
-//          title: new Text('Welcome to Flutter'),
-//        ),
-//        body: new Center(
-//          child: new RandomWords(),
-////          child: new Text(wordPair.asString),
-////          child: new Text('Hello World'),
-//        ),
-//      ),
-    );
-  }
-}
+class MyAppBar extends StatelessWidget {
+  MyAppBar({this.title});
 
+  // Widget子类中的字段往往都会定义为"final"
 
-class RandomWords extends StatefulWidget{
-  @override
-  State<StatefulWidget> createState() {
-    return new RandomWordsState();
-  }
-
-}
-
-class RandomWordsState extends State<RandomWords>{
-  final _suggestions = <WordPair>[];
-  final _biggerFont = const TextStyle(fontSize: 18.0);
-
-
-  Widget _buildSuggestions(){
-    return new ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemBuilder: (context,i){
-          if(i.isOdd) return new Divider();
-          final index = i ~/ 2;
-          if(index >= _suggestions.length){
-            _suggestions.addAll(generateWordPairs().take(10));
-          }
-          return _buildRow(_suggestions[index]);
-
-        });
-  }
-
-  Widget _buildRow(WordPair pair) {
-    return new ListTile(
-      title:new Text(
-      pair.asPascalCase,
-      style:_biggerFont,
-      )
-    );
-  }
+  final Widget title;
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text('Startup Name Generator'),
+    EdgeInsets padding = MediaQuery.of(context).padding;
+    double topHeight = math.max(padding.top , EdgeInsets.zero.top); //计算状态栏的高度
+
+
+    return new Container(
+      height: 56.0+ topHeight, // 单位是逻辑上的像素（并非真实的像素，类似于浏览器中的像素）
+//      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      padding: EdgeInsets.only(top: topHeight),
+      decoration: new BoxDecoration(color: Colors.blue[500]),
+      // Row 是水平方向的线性布局（linear layout）
+      child: new Row(
+        //列表项的类型是 <Widget>
+        children: <Widget>[
+          new IconButton(
+            icon: new Icon(Icons.menu),
+            tooltip: 'Navigation menu',
+            onPressed: null, // null 会禁用 button
+          ),
+          // Expanded expands its child to fill the available space.
+          new Expanded(
+            child: title,
+          ),
+          new IconButton(
+            icon: new Icon(Icons.search),
+            tooltip: 'Search',
+            onPressed: _click,
+          ),
+        ],
       ),
-      body: _buildSuggestions(),
     );
-//    return new Text(new WordPair.random().asPascalCase);
   }
 }
 
+  void _click(){
+
+  }
+
+class MyScaffold extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // Material 是UI呈现的“一张纸”
+    return new Material(
+      // Column is 垂直方向的线性布局.
+      child: new Column(
+        children: <Widget>[
+          new MyAppBar(
+            title: new Text(
+              'Example title',
+              style: Theme.of(context).primaryTextTheme.title,
+            ),
+          ),
+          new Expanded(
+            child: new Center(
+              child: new Text('Hello, world!'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+void main() {
+  runApp(new MaterialApp(
+    title: 'My app', // used by the OS task switcher
+    home: new MyScaffold(),
+  ));
+}
